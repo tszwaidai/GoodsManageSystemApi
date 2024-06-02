@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gms.mapper.GoodsTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gms.entity.GoodsType">
+        <id column="goodsTypeId" property="goodsTypeId" />
+        <result column="goodsTypeName" property="goodsTypeName" />
+        <result column="goodsTypeDesc" property="goodsTypeDesc" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        goodsTypeId, goodsTypeName, goodsTypeDesc
+    </sql>
+
+</mapper>
