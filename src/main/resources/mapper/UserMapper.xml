@@ -8,11 +8,13 @@
         <result column="userName" property="userName" />
         <result column="userPassword" property="userPassword" />
         <result column="isAdmin" property="isAdmin" />
+        <result column="tele" property="tele" />
+        <result column="club" property="club" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        userId, userName, userPassword, isAdmin
+        userId, userName, userPassword, isAdmin, tele, club
     </sql>
 
 </mapper>

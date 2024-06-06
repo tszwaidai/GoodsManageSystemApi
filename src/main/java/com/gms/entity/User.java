@@ -16,8 +16,8 @@ import lombok.experimental.Accessors;
  * 
  * </p>
  *
- * @author Jovie
- * @since 2024-06-02
+ * @author tszwaidai
+ * @since 2024-06-07
  */
 @Getter
 @Setter
@@ -40,6 +40,14 @@ public class User implements Serializable {
     @ApiModelProperty("1是管理员，0是学生")
     @TableField("isAdmin")
     private Integer isAdmin;
+
+    @ApiModelProperty("联系电话")
+    @TableField("tele")
+    private String tele;
+
+    @ApiModelProperty("所属社团")
+    @TableField("club")
+    private String club;
 
 
 }

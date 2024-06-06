@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
  *  前端控制器
  * </p>
  *
- * @author Jovie
- * @since 2024-06-02
+ * @author tszwaidai
+ * @since 2024-06-07
  */
 @RestController
 @RequestMapping("/goodsType")

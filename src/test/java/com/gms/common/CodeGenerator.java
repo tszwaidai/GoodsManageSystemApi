@@ -9,11 +9,7 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 
 import java.util.Collections;
 
-/**
- * @author young
- * Date 2023/2/16 17:56
- * Description: store-cloud
- */
+
 public class CodeGenerator {
     public static void main(String[] args) {
         /**
@@ -40,7 +36,7 @@ public class CodeGenerator {
         String filePath = projectPath + "/src/main/java";  //java下的文件路径
         GlobalConfig global = new GlobalConfig.Builder()
                 .outputDir(filePath)//生成的输出路径
-                .author("Jovie")//生成的作者名字
+                .author("tszwaidai")//生成的作者名字
                 .enableSwagger()//开启swagger，需要添加swagger依赖并配置
                 .dateType(DateType.TIME_PACK)//时间策略
                 .commentDate("yyyy-MM-dd")//格式化时间格式

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
  *  服务实现类
  * </p>
  *
- * @author Jovie
- * @since 2024-06-02
+ * @author tszwaidai
+ * @since 2024-06-07
  */
 @Service
 public class LostServiceImpl extends ServiceImpl<LostMapper, Lost> implements LostService {
