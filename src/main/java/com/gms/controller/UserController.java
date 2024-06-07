@@ -2,12 +2,19 @@ package com.gms.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.gms.common.QueryPageParam;
 import com.gms.entity.User;
 import com.gms.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.w3c.dom.ls.LSException;
 
+import javax.xml.transform.Result;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,11 +27,42 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/user")
+@RequestMapping(value = "/user")
 public class UserController {
     @Autowired
     private UserService userService;
 
+//    @GetMapping(value = "/getCount")
+//    public Integer getCount() {
+//        return ;
+//    }
+
+    /**
+     * 分页查询
+     * @param query
+     * @return
+     */
+    @PostMapping(value = "queryPage")
+    public PageInfo<User> queryPage(@RequestBody QueryPageParam query) {
+        PageHelper.startPage(query.getPageNum(),query.getPageSize());
+
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if (query.getQueryParam() != null && !query.getQueryParam().isEmpty()) {
+            lambdaQueryWrapper.like(User::getUserName, query.getQueryParam());
+        }
+
+        List<User> userList = userService.list(lambdaQueryWrapper); //查询用户
+        PageInfo<User> pageInfo = new PageInfo<>(userList); //查询到的用户userList封装到pageInfo
+
+        return pageInfo;
+
+    }
+
+
+    /**
+     * 查询所有用户
+     * @return
+     */
     @GetMapping("/list")
     public List<User> list() {
         return  userService.list();
@@ -81,6 +119,8 @@ public class UserController {
         lambdaQueryWrapper.like(User::getUserName,user.getUserName());
         return userService.list(lambdaQueryWrapper);
     }
+
+
 
 
 }
