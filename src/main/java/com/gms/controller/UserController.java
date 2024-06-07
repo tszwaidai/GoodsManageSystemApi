@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gms.common.QueryPageParam;
+import com.gms.common.Result;
 import com.gms.entity.User;
 import com.gms.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.ls.LSException;
 
-import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class UserController {
      * @return
      */
     @PostMapping(value = "queryPage")
-    public PageInfo<User> queryPage(@RequestBody QueryPageParam query) {
+    public Result queryPage(@RequestBody QueryPageParam query) {
         PageHelper.startPage(query.getPageNum(),query.getPageSize());
 
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -54,9 +54,10 @@ public class UserController {
         List<User> userList = userService.list(lambdaQueryWrapper); //查询用户
         PageInfo<User> pageInfo = new PageInfo<>(userList); //查询到的用户userList封装到pageInfo
 
-        return pageInfo;
+        return Result.suc(pageInfo.getList(), pageInfo.getTotal());
 
     }
+
 
 
     /**

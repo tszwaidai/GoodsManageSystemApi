@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class QueryPageParam {
     //默认
 
-
+    //pagehelper
     private int pageSize ;
     private int pageNum ;
 
