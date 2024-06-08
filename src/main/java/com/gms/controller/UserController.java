@@ -9,6 +9,7 @@ import com.gms.common.QueryPageParam;
 import com.gms.common.Result;
 import com.gms.entity.User;
 import com.gms.service.UserService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +33,35 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-//    @GetMapping(value = "/getCount")
-//    public Integer getCount() {
-//        return ;
-//    }
+    /**
+     * 用户登录
+     * @param user
+     * @return
+     */
+    @PostMapping(value = "/login")
+    public Result login(@RequestBody User user) {
+        List list = userService.lambdaQuery()
+                .eq(User::getUserName,user.getUserName())
+                .eq(User::getUserPassword,user.getUserPassword()).list();
+        return list.size()>0?Result.suc(list.get(0)):Result.fail();
+    }
+
+    /**
+     * 用户注册
+     * @param user
+     * @return
+     */
+    @PostMapping(value = "/register")
+    public Result register(@RequestBody User user) {
+        //查询当前用户是否存在
+        List<User> existingUsers = userService.lambdaQuery()
+                .eq(User::getUserName,user.getUserName()).list();
+        if (existingUsers.size() > 0){
+            return Result.fail("用户已存在");
+        }
+        boolean isSaved = userService.save(user);
+        return isSaved ? Result.suc() : Result.fail();
+    }
 
     /**
      * 分页查询
@@ -120,9 +146,6 @@ public class UserController {
         lambdaQueryWrapper.like(User::getUserName,user.getUserName());
         return userService.list(lambdaQueryWrapper);
     }
-
-
-
 
 }
 

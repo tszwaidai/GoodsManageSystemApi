@@ -20,6 +20,10 @@ public class Result {
         return result(400,"失败",0L,null);
     }
 
+    public static Result fail(String msg) {
+        return result(400,msg,0L,null);
+    }
+
     public static Result suc() {
         return result(200,"成功",0L,null);
     }
