@@ -7,16 +7,19 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.gms.common.QueryPageParam;
 import com.gms.common.Result;
+import com.gms.common.TokenProcessor;
 import com.gms.entity.User;
 import com.gms.service.UserService;
 import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.ls.LSException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -33,6 +36,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     /**
      * 用户登录
      * @param user
@@ -43,7 +49,15 @@ public class UserController {
         List list = userService.lambdaQuery()
                 .eq(User::getUserName,user.getUserName())
                 .eq(User::getUserPassword,user.getUserPassword()).list();
-        return list.size()>0?Result.suc(list.get(0)):Result.fail();
+        if (list.size() > 0) {
+            // 用户名和密码正确，生成Token
+            String token = TokenProcessor.getInstance().makeToken();
+            // 将Token存储到Redis，设置过期时间
+            redisTemplate.opsForValue().set(token, list.get(0), 1, TimeUnit.HOURS);
+            return Result.suc(token);
+        } else {
+            return Result.fail("用户名或密码错误");
+        }
     }
 
     /**
@@ -83,8 +97,6 @@ public class UserController {
         return Result.suc(pageInfo.getList(), pageInfo.getTotal());
 
     }
-
-
 
     /**
      * 查询所有用户
@@ -145,6 +157,16 @@ public class UserController {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper();
         lambdaQueryWrapper.like(User::getUserName,user.getUserName());
         return userService.list(lambdaQueryWrapper);
+    }
+
+    @GetMapping(value = "/verify")
+    public Result verifyToken(@RequestParam String token) {
+        Object user = redisTemplate.opsForValue().get(token);
+        if (user != null){
+            return Result.suc(user);
+        } else {
+            return Result.fail("Token无效或已过期");
+        }
     }
 
 }
