@@ -29,10 +29,7 @@ public class GoodsInfoController {
      * 查询所有物品信息
      * @return
      */
-    @GetMapping("/list")
-    public List<GoodsInfo> list() {
-        return goodsInfoService.list();
-    }
+
 
 
 

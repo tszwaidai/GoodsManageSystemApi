@@ -24,6 +24,9 @@ public class Result {
         return result(400,msg,0L,null);
     }
 
+    public static Result suc(String msg) {
+        return result(200,msg,0L,null);
+    }
     public static Result suc() {
         return result(200,"成功",0L,null);
     }
