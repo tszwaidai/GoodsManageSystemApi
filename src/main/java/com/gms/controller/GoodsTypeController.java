@@ -30,6 +30,7 @@ public class GoodsTypeController {
     @Autowired
     private GoodsTypeService goodsTypeService;
 
+
     /**
      * 分页查询类型
      * @param typename
