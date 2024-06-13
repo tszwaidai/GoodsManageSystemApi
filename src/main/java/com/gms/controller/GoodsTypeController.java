@@ -4,8 +4,10 @@ package com.gms.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gms.common.Result;
+import com.gms.entity.GoodsInfo;
 import com.gms.entity.GoodsType;
 import com.gms.entity.User;
+import com.gms.service.GoodsInfoService;
 import com.gms.service.GoodsTypeService;
 import io.swagger.models.auth.In;
 import lombok.Getter;
@@ -29,6 +31,8 @@ public class GoodsTypeController {
 
     @Autowired
     private GoodsTypeService goodsTypeService;
+    @Autowired
+    private GoodsInfoService goodsInfoService;
 
 
     /**
