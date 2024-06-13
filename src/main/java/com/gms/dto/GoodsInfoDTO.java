@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 /**
  * @author tszwaidai
  * @version 1.0
- * @description: TODO
+ * @description: 物品信息封装实体
  * @date 2024/6/13 00:11
  */
 @Data
@@ -39,9 +39,6 @@ public class GoodsInfoDTO implements Serializable {
         this.goodsId = goodsId;
     }
 
-    public String getGoodsName() {
-        return goodsName;
-    }
 
     public void setGoodsName(String goodsName) {
         this.goodsName = goodsName;
