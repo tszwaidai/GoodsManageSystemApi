@@ -125,7 +125,15 @@ public class GoodsInfoController {
         return Result.suc("删除物品信息成功");
     }
 
-
+    @PostMapping("/updateStatus")
+    public Result updateStatus(@RequestBody GoodsInfo goodsInfo) {
+        boolean success = goodsInfoService.updateById(goodsInfo);
+        if (success){
+            return Result.suc("状态更新成功");
+        }else{
+            return Result.fail("状态更新失败");
+        }
+    }
 
 
 }
