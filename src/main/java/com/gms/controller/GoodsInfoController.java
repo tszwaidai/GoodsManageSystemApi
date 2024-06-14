@@ -7,8 +7,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
 import com.gms.common.Result;
 import com.gms.dto.GoodsInfoDTO;
+import com.gms.entity.Borrow;
 import com.gms.entity.GoodsInfo;
 import com.gms.entity.GoodsType;
+import com.gms.service.BorrowService;
 import com.gms.service.GoodsInfoService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,7 +37,8 @@ import java.util.stream.Collectors;
 public class GoodsInfoController {
     @Autowired
     private GoodsInfoService goodsInfoService;
-
+    @Autowired
+    protected BorrowService borrowService;
     /**
      * 分页查询所有物品信息 模糊查询与多表查询
      * @return
@@ -138,6 +142,48 @@ public class GoodsInfoController {
         }else{
             return Result.fail("状态更新失败");
         }
+    }
+
+    /**
+     * 学生点击“申请”，将物品状态设置为“申请中”，同时在Borrow表插入一条记录。
+     * @param request
+     * @return
+     */
+    @PostMapping("/apply")
+    public Result applyGoods(@RequestBody Map<String, Integer> request){
+        Integer goodsId = request.get("goodsId");
+        Integer userId = request.get("userId");
+
+        // 更新物品状态为“申请中”
+        GoodsInfo goodsInfo = goodsInfoService.getById(goodsId);
+        goodsInfo.setStatus(1); // 假设状态1表示“申请中”
+        goodsInfoService.updateById(goodsInfo);
+
+        // 在Borrow表中插入新记录
+        Borrow borrow = new Borrow();
+        borrow.setUserId(userId);
+        borrow.setGoodsId(goodsId);
+        borrow.setBorrowTime(LocalDateTime.now());
+        borrowService.save(borrow); // 保存到Borrow表
+
+        return Result.suc("申请物品成功");
+    }
+
+    /**
+     * 学生点击“领用”后，将物品状态设置为“使用中”。
+     * @param request
+     * @return
+     */
+    @PostMapping("/completeBorrow")
+    public Result completeBorrow(@RequestBody Map<String,Integer> request) {
+        Integer goodsId = request.get("goodsId");
+
+        // 更新物品状态为“使用中”
+        GoodsInfo goodsInfo = goodsInfoService.getById(goodsId);
+        goodsInfo.setStatus(4); // 假设状态3表示“使用中”
+        goodsInfoService.updateById(goodsInfo);
+
+        return Result.suc("物品领用成功");
     }
 
 

@@ -9,14 +9,18 @@ import com.gms.dto.BorrowDTO;
 import com.gms.dto.GoodsInfoDTO;
 import com.gms.entity.Borrow;
 import com.gms.entity.GoodsInfo;
+import com.gms.entity.Lost;
 import com.gms.entity.User;
 import com.gms.service.BorrowService;
 import com.gms.service.GoodsInfoService;
+import com.gms.service.LostService;
 import io.swagger.models.auth.In;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,6 +41,9 @@ public class BorrowController {
     private BorrowService borrowService;
     @Autowired
     private GoodsInfoService goodsInfoService;
+
+    @Autowired
+    private LostService lostService;
 
     /**
      * 分页查询借阅信息
@@ -102,6 +109,89 @@ public class BorrowController {
         borrowService.removeById(id);
         return Result.suc("删除借用记录成功");
     }
+
+
+    /**
+     * 管理员通过申请
+     * @param id
+     * @return
+     */
+    @PutMapping("/approve/{id}")
+    public Result approveBorrow(@PathVariable("id") Integer id) {
+        Borrow borrow = borrowService.getById(id);
+        borrow.setStatus(1); //假设状态1表示“已通过”
+        borrowService.updateById(borrow);
+
+        // 同时更新GoodsInfo表中对应物品的状态为“已通过”
+        GoodsInfo goodsInfo = goodsInfoService.getById(borrow.getGoodsId());
+        goodsInfo.setStatus(2); // 假设状态0表示“未申请”
+        goodsInfoService.updateById(goodsInfo);
+
+        return Result.suc("物品申请已通过");
+
+    }
+
+    /**
+     * 不同意申请
+     * @param id
+     * @return
+     */
+    @PutMapping("/reject/{id}")
+    public Result rejectBorrow(@PathVariable("id") Integer id){
+        Borrow borrow = borrowService.getById(id);
+        borrow.setStatus(2); //假设状态2表示“未通过”
+        borrowService.updateById(borrow);
+
+        // 同时更新GoodsInfo表中对应物品的状态为“未通过”
+        GoodsInfo goodsInfo = goodsInfoService.getById(borrow.getGoodsId());
+        goodsInfo.setStatus(3); // 假设状态0表示“未申请”
+        goodsInfoService.updateById(goodsInfo);
+
+        return Result.suc("物品申请未通过");
+    }
+
+    /**
+     * 学生归还物品
+     * @param id
+     * @return
+     */
+    @PutMapping("/return/{id}")
+    public Result returnGoods(@PathVariable("id") Integer id) {
+        Borrow borrow = borrowService.getById(id);
+        borrow.setReturnTime(LocalDateTime.now());
+        borrow.setStatus(3); // 假设状态2表示“已归还”
+        borrowService.updateById(borrow);
+
+        // 同时更新GoodsInfo表中对应物品的状态为“未申请”
+        GoodsInfo goodsInfo = goodsInfoService.getById(borrow.getGoodsId());
+        goodsInfo.setStatus(0); // 假设状态0表示“未申请”
+        goodsInfoService.updateById(goodsInfo);
+
+        return  Result.suc("物品已归还");
+
+    }
+
+    /**
+     * 物品丢失上报
+     * @param id
+     * @return
+     */
+    @PostMapping("/lost/{id}")
+    public  Result lostGoods(@PathVariable("id") Integer id){
+        Borrow borrow = borrowService.getById(id);
+        borrow.setStatus(4); //表示物品丢失
+        borrowService.updateById(borrow);
+
+        // 向lost插入一条数据
+        Lost lost = new Lost();
+        lost.setUserId(borrow.getUserId());
+        lost.setGoodsId(borrow.getGoodsId());
+        lost.setLostTime(LocalDateTime.now());
+
+        return Result.suc("物品丢失上报成功");
+    }
+
+
 
 
 }

@@ -41,7 +41,7 @@ public class GoodsInfo implements Serializable {
     @TableField("goodsDesc")
     private String goodsDesc;
 
-    @ApiModelProperty("物品状态：待审核/使用中/已归还")
+    @ApiModelProperty("")
     @TableField("status")
     private Integer status;
 

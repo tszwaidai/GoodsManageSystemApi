@@ -44,5 +44,8 @@ public class Borrow implements Serializable {
     @TableField("returnTime")
     private LocalDateTime returnTime;
 
+    @TableField("status")
+    private Integer status;
+
 
 }
