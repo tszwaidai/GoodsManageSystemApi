@@ -112,26 +112,6 @@ public class UserController {
     }
 
 
-    /**
-     * 分页查询pagehelper
-     * @param query
-     * @return
-     */
-    @PostMapping(value = "queryPage")
-    public Result queryPage(@RequestBody QueryPageParam query) {
-        PageHelper.startPage(query.getPageNum(),query.getPageSize());
-
-        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        if (query.getQueryParam() != null && !query.getQueryParam().isEmpty()) {
-            lambdaQueryWrapper.like(User::getUserName, query.getQueryParam());
-        }
-
-        List<User> userList = userService.list(lambdaQueryWrapper); //查询用户
-        PageInfo<User> pageInfo = new PageInfo<>(userList); //查询到的用户userList封装到pageInfo
-
-        return Result.suc(pageInfo.getList(), pageInfo.getTotal());
-
-    }
 
     /**
      * 查询所有用户/基于mp的分页查询
