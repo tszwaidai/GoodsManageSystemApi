@@ -26,5 +26,6 @@ public class BorrowDTO implements Serializable {
     private LocalDateTime returnTime;
     private String goodsName;
     private String userName;
+    private Integer status;
 
 }

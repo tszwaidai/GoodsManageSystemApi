@@ -164,6 +164,7 @@ public class GoodsInfoController {
         borrow.setUserId(userId);
         borrow.setGoodsId(goodsId);
         borrow.setBorrowTime(LocalDateTime.now());
+        borrow.setStatus(0);
         borrowService.save(borrow); // 保存到Borrow表
 
         return Result.suc("申请物品成功");

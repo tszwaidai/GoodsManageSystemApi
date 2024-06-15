@@ -144,7 +144,7 @@ public class BorrowController {
 
         // 同时更新GoodsInfo表中对应物品的状态为“未通过”
         GoodsInfo goodsInfo = goodsInfoService.getById(borrow.getGoodsId());
-        goodsInfo.setStatus(3); // 假设状态0表示“未申请”
+        goodsInfo.setStatus(3); // 假设状态0表示“未通过”
         goodsInfoService.updateById(goodsInfo);
 
         return Result.suc("物品申请未通过");
@@ -173,20 +173,30 @@ public class BorrowController {
 
     /**
      * 物品丢失上报
-     * @param id
+     * @param
      * @return
      */
-    @PostMapping("/lost/{id}")
-    public  Result lostGoods(@PathVariable("id") Integer id){
-        Borrow borrow = borrowService.getById(id);
+    @PostMapping("/lost")
+    public  Result lostGoods(@RequestBody Map<String, Integer> request){
+        Integer goodsId = request.get("goodsId");
+        Integer userId = request.get("userId");
+
+        // 通过 goodsId 和 userId 查询 Borrow 对象
+        Borrow borrow = borrowService.findByGoodsIdAndUserId(goodsId, userId);
         borrow.setStatus(4); //表示物品丢失
         borrowService.updateById(borrow);
 
+        // 同时更新GoodsInfo表中对应物品的状态为“未申请”
+        GoodsInfo goodsInfo = goodsInfoService.getById(borrow.getGoodsId());
+        goodsInfo.setStatus(0); // 假设状态0表示“未申请”
+        goodsInfoService.updateById(goodsInfo);
+
         // 向lost插入一条数据
         Lost lost = new Lost();
-        lost.setUserId(borrow.getUserId());
-        lost.setGoodsId(borrow.getGoodsId());
+        lost.setUserId(userId);
+        lost.setGoodsId(goodsId);
         lost.setLostTime(LocalDateTime.now());
+        lostService.save(lost);
 
         return Result.suc("物品丢失上报成功");
     }

@@ -16,4 +16,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface BorrowService extends IService<Borrow> {
     IPage<BorrowDTO> getBorrowDTOPage(Page<?> page,String goodsname,String username);
+
+    Borrow findByGoodsIdAndUserId(Integer goodsId, Integer userId);
 }

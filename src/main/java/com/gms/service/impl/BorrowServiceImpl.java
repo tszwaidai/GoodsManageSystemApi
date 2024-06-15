@@ -1,5 +1,6 @@
 package com.gms.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gms.dto.BorrowDTO;
@@ -26,5 +27,12 @@ public class BorrowServiceImpl extends ServiceImpl<BorrowMapper, Borrow> impleme
     @Override
     public IPage<BorrowDTO> getBorrowDTOPage(Page<?> page, String goodsname, String username) {
         return borrowMapper.selectBorrowDTOPage(page,goodsname,username);
+    }
+
+    @Override
+    public Borrow findByGoodsIdAndUserId(Integer goodsId, Integer userId) {
+        QueryWrapper<Borrow> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("goodsId", goodsId).eq("userId", userId);
+        return borrowMapper.selectOne(queryWrapper);
     }
 }

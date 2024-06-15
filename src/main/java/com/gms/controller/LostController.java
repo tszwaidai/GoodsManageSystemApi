@@ -61,7 +61,8 @@ public class LostController {
     public Result solveLost(@PathVariable("id") Integer id) {
         Lost lost = lostService.getById(id);
 
-        Borrow borrow = borrowService.getById(lost.getLostId());
+        // 通过 goodsId 和 userId 查询 Borrow 记录
+        Borrow borrow = borrowService.findByGoodsIdAndUserId(lost.getGoodsId(), lost.getUserId());
         borrow.setStatus(0); //丢失已处理 恢复初始状态
         borrowService.updateById(borrow);
 
