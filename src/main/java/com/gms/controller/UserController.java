@@ -100,6 +100,7 @@ public class UserController {
         return isSaved ? Result.suc() : Result.fail();
     }
 
+
     /**
      * 退出登录
      * @param token
