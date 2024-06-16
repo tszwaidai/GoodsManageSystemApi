@@ -26,7 +26,7 @@ public interface BorrowMapper extends BaseMapper<Borrow> {
      * @param username
      * @return
      */
-    @Select("SELECT b.borrowId, b.userId, b.goodsId, b.borrowTime, b.returnTime, g.goodsName, u.username " +
+    @Select("SELECT b.borrowId, b.userId, b.goodsId, b.borrowTime, b.returnTime, b.status, g.goodsName, u.username " +
             "FROM borrow b " +
             "LEFT JOIN goods_info g ON b.goodsId = g.goodsId " +
             "LEFT JOIN user u ON b.userId = u.userId " +

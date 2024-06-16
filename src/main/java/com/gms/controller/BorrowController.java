@@ -159,7 +159,7 @@ public class BorrowController {
     public Result returnGoods(@PathVariable("id") Integer id) {
         Borrow borrow = borrowService.getById(id);
         borrow.setReturnTime(LocalDateTime.now());
-        borrow.setStatus(3); // 假设状态2表示“已归还”
+        borrow.setStatus(3); // 假设状态3表示“已归还”
         borrowService.updateById(borrow);
 
         // 同时更新GoodsInfo表中对应物品的状态为“未申请”
