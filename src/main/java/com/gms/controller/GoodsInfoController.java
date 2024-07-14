@@ -10,6 +10,7 @@ import com.gms.dto.GoodsInfoDTO;
 import com.gms.entity.Borrow;
 import com.gms.entity.GoodsInfo;
 import com.gms.entity.GoodsType;
+import com.gms.entity.User;
 import com.gms.service.BorrowService;
 import com.gms.service.GoodsInfoService;
 import io.swagger.models.auth.In;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,11 +37,13 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/goodsInfo")
+@SessionAttributes("currentUser")
 public class GoodsInfoController {
     @Autowired
     private GoodsInfoService goodsInfoService;
     @Autowired
     protected BorrowService borrowService;
+
     /**
      * 分页查询所有物品信息 模糊查询与多表查询
      * @return
@@ -170,22 +175,7 @@ public class GoodsInfoController {
         return Result.suc("申请物品成功");
     }
 
-    /**
-     * 学生点击“领用”后，将物品状态设置为“使用中”。
-     * @param request
-     * @return
-     */
-    @PostMapping("/completeBorrow")
-    public Result completeBorrow(@RequestBody Map<String,Integer> request) {
-        Integer goodsId = request.get("goodsId");
 
-        // 更新物品状态为“使用中”
-        GoodsInfo goodsInfo = goodsInfoService.getById(goodsId);
-        goodsInfo.setStatus(4); // 假设状态3表示“使用中”
-        goodsInfoService.updateById(goodsInfo);
-
-        return Result.suc("物品领用成功");
-    }
 
 
 }

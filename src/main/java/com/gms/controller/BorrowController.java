@@ -151,6 +151,22 @@ public class BorrowController {
     }
 
     /**
+     * 学生点击“领用”后，将物品状态设置为“使用中”。
+     * @param id
+     * @return
+     */
+    @PostMapping("/completeBorrow/{id}")
+    public Result completeBorrow(@PathVariable("id") Integer id) {
+        Borrow borrow = borrowService.getById(id);
+
+        // 更新物品状态为“使用中”
+        borrow.setStatus(3); //使用中
+        borrowService.updateById(borrow);
+
+        return Result.suc("物品领用成功");
+    }
+
+    /**
      * 学生归还物品
      * @param id
      * @return
@@ -159,7 +175,7 @@ public class BorrowController {
     public Result returnGoods(@PathVariable("id") Integer id) {
         Borrow borrow = borrowService.getById(id);
         borrow.setReturnTime(LocalDateTime.now());
-        borrow.setStatus(3); // 假设状态3表示“已归还”
+        borrow.setStatus(4); // 假设状态4表示“已归还”
         borrowService.updateById(borrow);
 
         // 同时更新GoodsInfo表中对应物品的状态为“未申请”
@@ -183,7 +199,7 @@ public class BorrowController {
 
         // 通过 goodsId 和 userId 查询 Borrow 对象
         Borrow borrow = borrowService.findByGoodsIdAndUserId(goodsId, userId);
-        borrow.setStatus(4); //表示物品丢失
+        borrow.setStatus(5); //表示物品丢失
         borrowService.updateById(borrow);
 
         // 同时更新GoodsInfo表中对应物品的状态为“未申请”
@@ -197,6 +213,7 @@ public class BorrowController {
         lost.setGoodsId(goodsId);
         lost.setLostTime(LocalDateTime.now());
         lostService.save(lost);
+
 
         return Result.suc("物品丢失上报成功");
     }
