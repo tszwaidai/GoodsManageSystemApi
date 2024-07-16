@@ -1,6 +1,7 @@
 package com.gms.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.yulichang.wrapper.MPJLambdaWrapper;
@@ -21,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -218,7 +220,22 @@ public class BorrowController {
         return Result.suc("物品丢失上报成功");
     }
 
+    /**
+     *审核情况获取
+     * @return
+     */
+    @GetMapping("/status-count")
+    public Result getStatusCount() {
+        // 获取各状态的数量
+        Map<String, Long> countMap = new HashMap<>();
+        countMap.put("pending", borrowService.count(new QueryWrapper<Borrow>().eq("status", 0))); // 待审核
+        countMap.put("approved", borrowService.count(new QueryWrapper<Borrow>().eq("status", 1))); // 已通过
+        countMap.put("rejected", borrowService.count(new QueryWrapper<Borrow>().eq("status", 2))); // 未通过
+        countMap.put("using", borrowService.count(new QueryWrapper<Borrow>().eq("status", 3))); // 使用中
+        countMap.put("returned", borrowService.count(new QueryWrapper<Borrow>().eq("status", 4))); // 已归还
 
+        return Result.suc(countMap);
+    }
 
 
 }

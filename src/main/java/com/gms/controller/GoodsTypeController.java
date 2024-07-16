@@ -2,8 +2,10 @@ package com.gms.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.gms.common.Result;
+import com.gms.dto.TypeCountDTO;
 import com.gms.entity.GoodsInfo;
 import com.gms.entity.GoodsType;
 import com.gms.entity.User;
@@ -15,6 +17,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -52,6 +58,36 @@ public class GoodsTypeController {
         Page<GoodsType> page = new Page<>(pageNo,pageSize);
         goodsTypeService.page(page,wrapper);
         return Result.suc(page.getRecords(),page.getTotal());
+    }
+
+    /**
+     * 获取类别数量
+     * @return
+     */
+    @GetMapping("/type-count")
+    public Result getTypeCount(){
+        // 获取分类数量
+        QueryWrapper<GoodsInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("goodsTypeId", "COUNT(*) as count")
+                .groupBy("goodsTypeId");
+
+        List<Map<String, Object>> typeCounts = goodsInfoService.listMaps(queryWrapper);
+
+        // 获取所有分类的名字
+        Map<Integer, String> typeNames = goodsTypeService.list().stream()
+                .collect(Collectors.toMap(GoodsType::getGoodsTypeId, GoodsType::getGoodsTypeName));
+
+        // 将分类ID和数量转换为分类名称和数量
+        List<TypeCountDTO> result = typeCounts.stream().map(tc -> {
+            TypeCountDTO dto = new TypeCountDTO();
+            Integer typeId = (Integer) tc.get("goodsTypeId");
+            dto.setTypeName(typeNames.get(typeId));
+            dto.setCount((Long) tc.get("count"));
+            return dto;
+        }).collect(Collectors.toList());
+
+        return Result.suc(result);
+
     }
 
     /**
