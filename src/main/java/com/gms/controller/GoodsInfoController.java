@@ -53,40 +53,7 @@ public class GoodsInfoController {
                               @RequestParam(value = "typename", required = false) String typename,
                               @RequestParam(value = "pageNo") Long pageNo,
                               @RequestParam(value = "pageSize") Long pageSize) {
-        Page<Map<String, Object>> page = new Page<>(pageNo, pageSize);
-        // 创建联表查询包装器
-        MPJLambdaWrapper<GoodsInfo> wrapper = new MPJLambdaWrapper<>();
-        // 添加联表查询
-        wrapper.selectAll(GoodsInfo.class)
-                .select(GoodsType::getGoodsTypeName) // 选择类型名称
-                .leftJoin(GoodsType.class, GoodsType::getGoodsTypeId, GoodsInfo::getGoodsTypeId);
-        // 根据物品名称的搜索条件
-        if (StringUtils.hasText(goodsname)) {
-            wrapper.like(GoodsInfo::getGoodsName, goodsname);
-        }
-        // 添加根据分类名称的搜索条件
-        if (StringUtils.hasText(typename)) {
-            wrapper.like(GoodsType::getGoodsTypeName, typename);
-        }
-
-        IPage<Map<String, Object>> rawPage = goodsInfoService.pageMaps(page,wrapper);
-
-        List<GoodsInfoDTO> goodsInfoDTOList = rawPage.getRecords().stream().map(record -> {
-            GoodsInfoDTO dto = new GoodsInfoDTO();
-            dto.setGoodsId((Integer) record.get("goodsId"));
-            dto.setGoodsName((String) record.get("goodsName"));
-            dto.setGoodsTypeId((Integer) record.get("goodsTypeId"));
-            dto.setGoodsTypeName((String) record.get("goodsTypeName")); // 手动设置类型名称
-            dto.setGoodsDesc((String) record.get("goodsDesc"));
-            dto.setStatus((Integer) record.get("status"));
-            dto.setGoodsPrice((BigDecimal) record.get("goodsPrice"));
-            return dto;
-        }).collect(Collectors.toList());
-
-        // 创建DTO分页对象
-        Page<GoodsInfoDTO> dtoPage = new Page<>(pageNo, pageSize, rawPage.getTotal());
-        dtoPage.setRecords(goodsInfoDTOList);
-        return Result.suc(dtoPage.getRecords(), dtoPage.getTotal());
+        return goodsInfoService.getInfoList(goodsname,typename,pageNo,pageSize);
     }
 
 
@@ -97,8 +64,7 @@ public class GoodsInfoController {
      */
     @PostMapping(value = "/add")
     public Result addInfo(@RequestBody GoodsInfo goodsInfo) {
-        goodsInfoService.save(goodsInfo);
-        return Result.suc("新增物品信息成功");
+        return goodsInfoService.addInfo(goodsInfo);
     }
 
     /**
@@ -108,8 +74,7 @@ public class GoodsInfoController {
      */
     @PutMapping(value = "/update")
     public Result updateInfo(@RequestBody GoodsInfo goodsInfo) {
-        goodsInfoService.updateById(goodsInfo);
-        return Result.suc("修改物品信息成功");
+        return goodsInfoService.updateInfo(goodsInfo);
     }
 
     /**
@@ -119,8 +84,7 @@ public class GoodsInfoController {
      */
     @GetMapping("/{id}")
     public Result getInfoById(@PathVariable("id") Integer id){
-         GoodsInfo goodsInfo = goodsInfoService.getById(id);
-         return Result.suc(goodsInfo);
+        return goodsInfoService.getInfoById(id);
     }
 
     /**
@@ -130,8 +94,7 @@ public class GoodsInfoController {
      */
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable("id") Integer id){
-        goodsInfoService.removeById(id);
-        return Result.suc("删除物品信息成功");
+        return goodsInfoService.deleteById(id);
     }
 
     /**
@@ -141,12 +104,7 @@ public class GoodsInfoController {
      */
     @PostMapping("/updateStatus")
     public Result updateStatus(@RequestBody GoodsInfo goodsInfo) {
-        boolean success = goodsInfoService.updateById(goodsInfo);
-        if (success){
-            return Result.suc("状态更新成功");
-        }else{
-            return Result.fail("状态更新失败");
-        }
+        return goodsInfoService.updateStatus(goodsInfo);
     }
 
     /**
@@ -155,27 +113,9 @@ public class GoodsInfoController {
      * @return
      */
     @PostMapping("/apply")
-    public Result applyGoods(@RequestBody Map<String, Integer> request){
-        Integer goodsId = request.get("goodsId");
-        Integer userId = request.get("userId");
-
-        // 更新物品状态为“申请中”
-        GoodsInfo goodsInfo = goodsInfoService.getById(goodsId);
-        goodsInfo.setStatus(1); // 假设状态1表示“申请中”
-        goodsInfoService.updateById(goodsInfo);
-
-        // 在Borrow表中插入新记录
-        Borrow borrow = new Borrow();
-        borrow.setUserId(userId);
-        borrow.setGoodsId(goodsId);
-        borrow.setBorrowTime(LocalDateTime.now());
-        borrow.setStatus(0);
-        borrowService.save(borrow); // 保存到Borrow表
-
-        return Result.suc("申请物品成功");
+    public Result applyGoods(@RequestBody Map<String, Integer> request) {
+        return goodsInfoService.applyGoods(request);
     }
-
-
 
 
 }
