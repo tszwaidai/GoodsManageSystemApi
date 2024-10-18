@@ -1,5 +1,6 @@
 package com.gms.service;
 
+import com.gms.common.Result;
 import com.gms.entity.GoodsType;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface GoodsTypeService extends IService<GoodsType> {
 
+    Result getTypeList(String typename, Long pageNo, Long pageSize);
+
+    Result getTypeCount();
+
+    Result addType(GoodsType goodsType);
+
+    Result updateType(GoodsType goodsType);
+
+    Result getTypeById(Integer id);
+
+    Result deleteTypeById(Integer id);
 }

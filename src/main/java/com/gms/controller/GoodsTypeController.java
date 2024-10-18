@@ -1,12 +1,8 @@
 package com.gms.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.gms.common.Result;
-import com.gms.dto.TypeCountDTO;
-import com.gms.entity.GoodsInfo;
 import com.gms.entity.GoodsType;
 import com.gms.entity.User;
 import com.gms.service.GoodsInfoService;
@@ -52,12 +48,7 @@ public class GoodsTypeController {
     public Result getTypeList(@RequestParam(value = "typename",required = false) String typename,
                               @RequestParam(value = "pageNo") Long pageNo,
                               @RequestParam(value = "pageSize") Long pageSize) {
-        LambdaQueryWrapper<GoodsType> wrapper = new LambdaQueryWrapper<>();
-        //模糊查询
-        wrapper.like(StringUtils.hasText(typename),GoodsType::getGoodsTypeName,typename);
-        Page<GoodsType> page = new Page<>(pageNo,pageSize);
-        goodsTypeService.page(page,wrapper);
-        return Result.suc(page.getRecords(),page.getTotal());
+        return goodsTypeService.getTypeList(typename, pageNo, pageSize);
     }
 
     /**
@@ -66,28 +57,7 @@ public class GoodsTypeController {
      */
     @GetMapping("/type-count")
     public Result getTypeCount(){
-        // 获取分类数量
-        QueryWrapper<GoodsInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("goodsTypeId", "COUNT(*) as count")
-                .groupBy("goodsTypeId");
-
-        List<Map<String, Object>> typeCounts = goodsInfoService.listMaps(queryWrapper);
-
-        // 获取所有分类的名字
-        Map<Integer, String> typeNames = goodsTypeService.list().stream()
-                .collect(Collectors.toMap(GoodsType::getGoodsTypeId, GoodsType::getGoodsTypeName));
-
-        // 将分类ID和数量转换为分类名称和数量
-        List<TypeCountDTO> result = typeCounts.stream().map(tc -> {
-            TypeCountDTO dto = new TypeCountDTO();
-            Integer typeId = (Integer) tc.get("goodsTypeId");
-            dto.setTypeName(typeNames.get(typeId));
-            dto.setCount((Long) tc.get("count"));
-            return dto;
-        }).collect(Collectors.toList());
-
-        return Result.suc(result);
-
+        return goodsTypeService.getTypeCount();
     }
 
     /**
@@ -97,8 +67,7 @@ public class GoodsTypeController {
      */
     @PostMapping(value = "/add")
     public Result addType(@RequestBody GoodsType goodsType) {
-        goodsTypeService.save(goodsType);
-        return Result.suc("新增物品分类成功");
+        return goodsTypeService.addType(goodsType);
     }
 
 
@@ -109,8 +78,7 @@ public class GoodsTypeController {
      */
     @PutMapping(value = "/update")
     public Result updateType(@RequestBody GoodsType goodsType){
-        goodsTypeService.updateById(goodsType);
-        return Result.suc("物品分类修改成功");
+        return goodsTypeService.updateType(goodsType);
     }
 
     /**
@@ -120,8 +88,7 @@ public class GoodsTypeController {
      */
     @GetMapping("/{id}")
     public Result getTypeById(@PathVariable("id") Integer id) {
-        GoodsType goodsType = goodsTypeService.getById(id);
-        return Result.suc(goodsType);
+        return goodsTypeService.getTypeById(id);
     }
 
     /**
@@ -131,8 +98,7 @@ public class GoodsTypeController {
      */
     @DeleteMapping("/{id}")
     public Result deleteTypeById(@PathVariable("id") Integer id){
-        goodsTypeService.removeById(id);
-        return Result.suc("删除物品分类信息成功");
+        return goodsTypeService.deleteTypeById(id);
     }
 
 
