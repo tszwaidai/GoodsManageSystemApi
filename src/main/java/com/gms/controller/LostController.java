@@ -46,12 +46,7 @@ public class LostController {
                                 @RequestParam(value = "username",required = false) String username,
                                 @RequestParam(value = "pageNo") Long pageNo,
                                 @RequestParam(value = "pageSize") Long pageSize) {
-
-        // 创建分页对象
-        Page<LostDTO> page = new Page<>(pageNo, pageSize);
-        //分页查询
-        IPage<LostDTO> lostDTOPage = lostService.getLostDTOPage(page, goodsname, username);
-        return Result.suc(lostDTOPage.getRecords(), lostDTOPage.getTotal());
+        return lostService.getLostList(goodsname,username,pageNo,pageSize);
     }
 
     /**
@@ -61,15 +56,7 @@ public class LostController {
      */
     @PutMapping("/solve/{id}")
     public Result solveLost(@PathVariable("id") Integer id) {
-        Lost lost = lostService.getById(id);
-
-        // 通过 goodsId 和 userId 查询 Borrow 记录
-        Borrow borrow = borrowService.findByGoodsIdAndUserId(lost.getGoodsId(), lost.getUserId());
-        borrow.setStatus(6); //丢失已处理 恢复初始状态
-        borrow.setReturnTime(LocalDateTime.now());
-        borrowService.updateById(borrow);
-
-        return Result.suc("丢失物品已解决");
+        return lostService.solveLost(id);
     }
 
     /**
@@ -79,8 +66,7 @@ public class LostController {
      */
     @DeleteMapping("/{id}")
     public Result deleteById(@PathVariable("id") Integer id){
-        lostService.removeById(id);
-        return Result.suc("删除记录成功");
+        return lostService.deleteById(id);
     }
 
 
