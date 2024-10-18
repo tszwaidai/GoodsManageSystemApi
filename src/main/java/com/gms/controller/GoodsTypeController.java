@@ -33,9 +33,6 @@ public class GoodsTypeController {
 
     @Autowired
     private GoodsTypeService goodsTypeService;
-    @Autowired
-    private GoodsInfoService goodsInfoService;
-
 
     /**
      * 分页查询类型

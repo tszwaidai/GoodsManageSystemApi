@@ -2,9 +2,12 @@ package com.gms.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.gms.common.Result;
 import com.gms.dto.BorrowDTO;
 import com.gms.entity.Borrow;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -18,4 +21,26 @@ public interface BorrowService extends IService<Borrow> {
     IPage<BorrowDTO> getBorrowDTOPage(Page<?> page,String goodsname,String username);
 
     Borrow findByGoodsIdAndUserId(Integer goodsId, Integer userId);
+
+    Result getBorrowList(String goodsname, String username, Long pageNo, Long pageSize);
+
+    Result addBorrow(Borrow borrow);
+
+    Result updateBorrow(Borrow borrow);
+
+    Result getBorrowById(Integer id);
+
+    Result deleteById(Integer id);
+
+    Result approveBorrow(Integer id);
+
+    Result rejectBorrow(Integer id);
+
+    Result completeBorrow(Integer id);
+
+    Result returnGoods(Integer id);
+
+    Result lostGoods(Map<String, Integer> request);
+
+    Result getStatusCount();
 }

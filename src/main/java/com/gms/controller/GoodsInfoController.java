@@ -41,8 +41,6 @@ import java.util.stream.Collectors;
 public class GoodsInfoController {
     @Autowired
     private GoodsInfoService goodsInfoService;
-    @Autowired
-    protected BorrowService borrowService;
 
     /**
      * 分页查询所有物品信息 模糊查询与多表查询
